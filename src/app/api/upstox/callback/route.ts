@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
     );
     return new NextResponse(JSON.stringify({ data: response.data }, null, 2));
   } catch (e) {
-    console.log(e);
     return new NextResponse(JSON.stringify({ data: e }, null, 2));
   }
 }
