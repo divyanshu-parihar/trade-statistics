@@ -21,8 +21,10 @@ export default function RootLayout({
     <ReactQueryProvider>
       <DateRangeProvider>
         <html lang="en">
-          <body className={inter.className}>{children}</body>
-          <Toaster />
+          <body className={inter.className}>
+            {children}
+            <Toaster />
+          </body>
         </html>
       </DateRangeProvider>
     </ReactQueryProvider>

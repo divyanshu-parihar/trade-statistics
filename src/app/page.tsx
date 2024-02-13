@@ -32,7 +32,7 @@ export default function Home() {
           <input
             value={input}
             onChange={(e) => {
-              console.log(e.target.value);
+              // console.log(e.target.value);
               setInput(e.target.value);
             }}
             placeholder="Access Token"

@@ -23,23 +23,32 @@ import { dateRangeContext } from "../contexts/dateRange";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 export default function page() {
   // const localStorage = new LocalStorage();
 
-  // const token = localStorage.getItem("accesstoken");
-  const [token, setToken] = useState("");
+  const token = localStorage.getItem("accesstoken");
+  // const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState();
-  const radioRef = useRef();
+  const radioRef = useRef<HTMLElement>();
   const [noOfTrades, setNoOfTrades] = useState<number>(0);
   const [noOfTradesLoading, setNoOfTradesLoading] = useState(true);
-  const [orderLoading, setOrderLoading] = useState(true);
+  // const [orderLoading, setOrderLoading] = useState(true);
 
   // @ts-ignore
   const { currentDateRange } = useContext(dateRangeContext);
   const { toast } = useToast();
 
   const PlaceOrder = (token: string) => {
+    if (
+      radioRef.current &&
+      (radioRef.current as HTMLElement).getAttribute("data-state") ==
+        "unchecked"
+    ) {
+      // console.log(radioRef.current);
+      return;
+    }
     axios
       .post("/api/user/order/buy", {
         headers: {
@@ -48,8 +57,8 @@ export default function page() {
         token,
       })
       .then((res) => {
-        console.log(res.data);
-        setOrderLoading(false);
+        // console.log(res.data);
+        // setOrderLoading(false);
         return res.data;
       })
       .catch((e) => console.log(e));
@@ -59,10 +68,38 @@ export default function page() {
     });
     console.log("order");
   };
-
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accesstoken");
+  //   axios
+  //     .post("/api/user/trades", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       token,
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       // setOrderLoading(false);
+  //       setNoOfTrades((s) => res.data.data.data["trades_count"]);
+  //       return res.data;
+  //     })
+  //     .catch((e) => console.log(e));
+  //   toast({
+  //     title: "Logs",
+  //     description: "Trades Fetched ",
+  //   });
+  //   console.log("order");
+  // }, []);
   useEffect(() => {
     const token = localStorage.getItem("accesstoken");
+
     function handleCallback(e: any) {
+      if (
+        radioRef.current &&
+        (radioRef.current as HTMLElement).getAttribute("data-state") ==
+          "unchecked"
+      )
+        return;
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         // Handle the cmd + enter combination
         e.preventDefault(); // Prevent the default behavior (e.g., form submission)
@@ -90,7 +127,8 @@ export default function page() {
         token,
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
+        console.log(res.data);
         setNoOfTradesLoading(false);
         setNoOfTrades((s) => res.data.data.data["trades_count"]);
       })
@@ -195,7 +233,7 @@ export default function page() {
                 <CardHeader>
                   <CardTitle>Place order</CardTitle>
                   <CardDescription>
-                    Place QUICK 1QTY Order in CMD + ENTER
+                    Place QUICK 1 QTY Order in CMD + ENTER
                   </CardDescription>
                 </CardHeader>
                 <CardContent
@@ -206,15 +244,14 @@ export default function page() {
                   <Switch ref={radioRef} id="airplane-mode" />
                   <Label htmlFor="airplane-mode">Quick Trade</Label>
                   <Input></Input>
-                  <button
-                    disabled={orderLoading}
-                    // @ts-ignore
-                    onClick={() => PlaceOrder(radioRef)}
-                    className="m-4 text-white bg-green-600 p-2 rounded-md"
+                  <Button
+                    // disabled={orderLoading}
+                    onClick={() => PlaceOrder(token || "")}
+                    className="m-4 cursor-pointer text-white bg-green-600 p-2 rounded-md"
                   >
                     {" "}
                     Order
-                  </button>
+                  </Button>
                 </CardContent>
               </Card>
             </div>
