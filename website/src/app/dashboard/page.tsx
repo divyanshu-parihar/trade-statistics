@@ -1,5 +1,7 @@
 "use client";
+import { DatePickerWithRange } from "@/components/custom/datePicker";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,34 +10,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import axios from "axios";
-import {
-  MutableRefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { DatePickerWithRange } from "@/components/custom/datePicker";
-import { dateRangeContext } from "../contexts/dateRange";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { useContext, useEffect, useRef, useState } from "react";
+import { dateRangeContext } from "../contexts/dateRange";
 export default function page() {
-  // const localStorage = new LocalStorage();
-
   const token = localStorage.getItem("accesstoken");
-  // const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState();
   const radioRef = useRef<HTMLElement>();
   const [noOfTrades, setNoOfTrades] = useState<number>(0);
   const [noOfTradesLoading, setNoOfTradesLoading] = useState(true);
-  // const [orderLoading, setOrderLoading] = useState(true);
-
   // @ts-ignore
   const { currentDateRange } = useContext(dateRangeContext);
   const { toast } = useToast();
@@ -46,50 +35,27 @@ export default function page() {
       (radioRef.current as HTMLElement).getAttribute("data-state") ==
         "unchecked"
     ) {
-      // console.log(radioRef.current);
       return;
     }
     axios
-      .post("/api/user/order/buy", {
+      .post("/api/upstox/user/order/buy", {
         headers: {
           "Content-Type": "application/json",
         },
         token,
       })
       .then((res) => {
-        // console.log(res.data);
-        // setOrderLoading(false);
+        console.log(res.data);
+        toast({
+          title: "Order Placed",
+          description: "BUY order ",
+        });
         return res.data;
       })
       .catch((e) => console.log(e));
-    toast({
-      title: "Order Placed",
-      description: "BUY order ",
-    });
+
     console.log("order");
   };
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accesstoken");
-  //   axios
-  //     .post("/api/user/trades", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       token,
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-  //       // setOrderLoading(false);
-  //       setNoOfTrades((s) => res.data.data.data["trades_count"]);
-  //       return res.data;
-  //     })
-  //     .catch((e) => console.log(e));
-  //   toast({
-  //     title: "Logs",
-  //     description: "Trades Fetched ",
-  //   });
-  //   console.log("order");
-  // }, []);
   useEffect(() => {
     const token = localStorage.getItem("accesstoken");
 
@@ -158,7 +124,7 @@ export default function page() {
   }, []);
 
   return (
-    <div className="h-scree font-sans text-xl text-center">
+    <div className="h-scree text-center font-sans text-xl">
       <div className="title">User Statistics </div>
       {loading ? (
         ".. loading"
@@ -166,7 +132,7 @@ export default function page() {
         <div className="container">
           <pre className="profile_data">
             <div className="flex">
-              <Card className="w-full m-4 shadow-md">
+              <Card className="m-4 w-full shadow-md">
                 <CardHeader>
                   <CardTitle>Profile</CardTitle>
                   <CardDescription> Enabled Settings</CardDescription>
@@ -198,12 +164,12 @@ export default function page() {
                             <Badge>{el}</Badge>
                           </div>
                         );
-                      }
+                      },
                     )}
                 </CardFooter>
               </Card>
 
-              <Card className="w-full m-4 shadow-md">
+              <Card className="m-4 w-full shadow-md">
                 <CardHeader>
                   <CardTitle>Statistics</CardTitle>
                   <CardDescription>Stats with Intervals</CardDescription>
@@ -214,7 +180,7 @@ export default function page() {
                   />
 
                   {noOfTradesLoading ? (
-                    <Skeleton className="w-[50px] h-[10px] rounded-full" />
+                    <Skeleton className="h-[10px] w-[50px] rounded-full" />
                   ) : (
                     <div className="no_of_trades">
                       No. Of Trades : {noOfTrades}
@@ -237,7 +203,7 @@ export default function page() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent
-                  className=" flex items-center w-100
+                  className=" w-100 flex items-center
                 "
                 >
                   {/* @ts-ignore */}
@@ -247,7 +213,7 @@ export default function page() {
                   <Button
                     // disabled={orderLoading}
                     onClick={() => PlaceOrder(token || "")}
-                    className="m-4 cursor-pointer text-white bg-green-600 p-2 rounded-md"
+                    className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
                   >
                     {" "}
                     Order
