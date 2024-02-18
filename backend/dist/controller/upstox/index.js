@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpstoxController = void 0;
 const axios_1 = __importDefault(require("axios"));
+const generateError_1 = require("../../utils/generateError");
 class UpstoxController {
     constructor() { }
-    // profile
     static getProfile(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
             let config = {
@@ -47,7 +47,36 @@ class UpstoxController {
             return result;
         });
     }
-    // orders
+    static getFunds(access_token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let config = {
+                method: "GET",
+                maxBodyLength: Infinity,
+                url: "https://api.upstox.com/v2/user/get-funds-and-margin",
+                headers: {
+                    accept: "application/json",
+                    Authorization: `Bearer ${access_token.toString()}`,
+                },
+            };
+            let result;
+            try {
+                const { data } = yield (0, axios_1.default)(config);
+                result = {
+                    status: "success",
+                    data: data,
+                    error: {},
+                };
+            }
+            catch (e) {
+                result = {
+                    status: "success",
+                    data: {},
+                    error: e,
+                };
+            }
+            return result;
+        });
+    }
     static cancelTrade(access_token, token, qty) {
         return __awaiter(this, void 0, void 0, function* () {
             let headers = {
@@ -85,6 +114,38 @@ class UpstoxController {
                 };
             }
             return result;
+        });
+    }
+    static exitAll(access_token, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const positions = yield UpstoxController.getPositions(access_token);
+            if (positions.status == "error") {
+                return (0, generateError_1.genError)("Unable to fetch positions");
+            }
+            console.log(positions.data.data[0]);
+            try {
+                const results = [];
+                for (let position of positions.data.data) {
+                    results.push(new Promise((resolve, reject) => {
+                        try {
+                            const data = UpstoxController.cancelTrade(access_token, position["instrument_token"], position["quantity"]);
+                            resolve(data);
+                        }
+                        catch (e) {
+                            reject();
+                        }
+                    }));
+                }
+                const result = {
+                    status: "success",
+                    data: yield Promise.allSettled(results),
+                    error: {},
+                };
+                return result;
+            }
+            catch (e) {
+                return (0, generateError_1.genError)(e.message);
+            }
         });
     }
     static getPositions(access_token) {
@@ -156,7 +217,6 @@ class UpstoxController {
             return result;
         });
     }
-    //trades
     static getAllTrades(access_token, fin_year, sector) {
         return __awaiter(this, void 0, void 0, function* () {
             let config = {

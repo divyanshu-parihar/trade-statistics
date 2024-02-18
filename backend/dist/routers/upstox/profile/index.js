@@ -17,4 +17,9 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield upstox_1.UpstoxController.getProfile(token);
     return res.json(data);
 }));
+router.post("/funds", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.body.token;
+    const data = yield upstox_1.UpstoxController.getFunds(token);
+    return res.json(data);
+}));
 exports.default = router;

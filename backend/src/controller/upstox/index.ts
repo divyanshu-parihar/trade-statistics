@@ -1,5 +1,11 @@
-import { Result } from "../../models/types";
+import {
+  Instruments,
+  Result,
+  instrument_regex,
+  validateRegex,
+} from "../../models/types";
 import axios from "axios";
+import { genError } from "../../utils/generateError";
 export type token = string;
 export class UpstoxController {
   constructor() {}
@@ -32,13 +38,38 @@ export class UpstoxController {
 
     return result;
   }
+
+  static async getFunds(access_token: token) {
+    let config = {
+      method: "GET",
+      maxBodyLength: Infinity,
+      url: "https://api.upstox.com/v2/user/get-funds-and-margin",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${access_token.toString()}`,
+      },
+    };
+    let result: Result;
+    try {
+      const { data } = await axios(config);
+      result = {
+        status: "success",
+        data: data,
+        error: {},
+      };
+    } catch (e: any) {
+      result = {
+        status: "success",
+        data: {},
+        error: e,
+      };
+    }
+
+    return result;
+  }
   // orders
 
-  static async cancelTrade(
-    access_token: token,
-    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021",
-    qty: number
-  ) {
+  static async cancelTrade(access_token: token, token: string, qty: number) {
     let headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${access_token}`,
@@ -77,6 +108,42 @@ export class UpstoxController {
     return result;
   }
 
+  static async exitAll(access_token: token, token: string) {
+    const positions: Result = await UpstoxController.getPositions(access_token);
+    if (positions.status == "error") {
+      return genError("Unable to fetch positions");
+    }
+    console.log((positions.data as any).data[0]);
+    try {
+      const results = [];
+      for (let position of (positions.data as any).data) {
+        results.push(
+          new Promise((resolve, reject) => {
+            try {
+              const data = UpstoxController.cancelTrade(
+                access_token,
+                position["instrument_token"],
+                position["quantity"]
+              );
+
+              resolve(data);
+            } catch (e) {
+              reject();
+            }
+          })
+        );
+      }
+      const result: Result = {
+        status: "success",
+        data: await Promise.allSettled(results),
+        error: {},
+      };
+      return result;
+    } catch (e: any) {
+      return genError(e.message);
+    }
+  }
+
   static async getPositions(access_token: token) {
     let config = {
       method: "get",
@@ -109,7 +176,7 @@ export class UpstoxController {
 
   static async placeOrder(
     access_token: token,
-    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021",
+    token: Instruments,
     qty: number
   ) {
     let headers = {

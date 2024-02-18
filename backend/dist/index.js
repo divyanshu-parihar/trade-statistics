@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const upstox_1 = __importDefault(require("./routers/upstox"));
 const auth_1 = __importDefault(require("./middlewares/auth"));
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use("/upstox", auth_1.default, upstox_1.default);
 app.get("/", (req, res) => {

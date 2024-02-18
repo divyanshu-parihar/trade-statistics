@@ -10,4 +10,9 @@ router.post("/", async (req: any, res: any) => {
   return res.json(data);
 });
 
+router.post("/funds", async (req: any, res: any) => {
+  const token = req.body.token;
+  const data = await UpstoxController.getFunds(token);
+  return res.json(data);
+});
 export default router;
