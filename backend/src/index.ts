@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/upstox", AuthMiddleware, upstoxRouter);
 app.get("/", (req: any, res: any) => {
-  res.json({ ping: "Hello" });
+  return res.json({ ping: "Hello" });
 });
 app.listen(8080, () => {
   console.log("server started...  on port 8080");
