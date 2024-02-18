@@ -34,9 +34,10 @@ export class UpstoxController {
   }
   // orders
 
-  static async cancleAllTrades(
+  static async cancelTrade(
     access_token: token,
-    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021"
+    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021",
+    qty: number
   ) {
     let headers = {
       "Content-Type": "application/json",
@@ -44,7 +45,7 @@ export class UpstoxController {
     };
     const url = "https://api.upstox.com/v2/order/place";
     const params = {
-      quantity: 1,
+      quantity: qty,
       product: "D",
       validity: "DAY",
       price: 0,
@@ -108,7 +109,8 @@ export class UpstoxController {
 
   static async placeOrder(
     access_token: token,
-    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021"
+    token: "NSE_EQ|INE669E01016" | "NSE_EQ|INE040H01021",
+    qty: number
   ) {
     let headers = {
       "Content-Type": "application/json",
@@ -116,7 +118,7 @@ export class UpstoxController {
     };
     const url = "https://api.upstox.com/v2/order/place";
     const params = {
-      quantity: 1,
+      quantity: qty,
       product: "D",
       validity: "DAY",
       price: 0,

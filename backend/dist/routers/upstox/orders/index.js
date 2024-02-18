@@ -13,10 +13,13 @@ const express_1 = require("express");
 const upstox_1 = require("../../../controller/upstox");
 const router = (0, express_1.Router)();
 router.get("/buy", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield upstox_1.UpstoxController.placeOrder("eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI2RUFFWkYiLCJqdGkiOiI2NWQwOTVjM2QwOTU1MDA4NmNlZmNlNjUiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE3MDgxNjg2NDMsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTcwODIwNzIwMH0.BatAzaL-wKgtlp_ci7b7QejthexLdXnnRRck8RrzApk", "NSE_EQ|INE040H01021");
+    const token = req.body.token;
+    const data = yield upstox_1.UpstoxController.placeOrder(token, "NSE_EQ|INE040H01021", 1);
     return res.json(data);
 }));
 router.get("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const data = await UpstoxController.
+    const token = req.body.token;
+    const data = yield upstox_1.UpstoxController.cancelTrade(token, "NSE_EQ|INE040H01021", 1);
+    return res.json(data);
 }));
 exports.default = router;

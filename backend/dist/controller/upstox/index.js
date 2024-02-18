@@ -48,7 +48,7 @@ class UpstoxController {
         });
     }
     // orders
-    static cancleAllTrades(access_token, token) {
+    static cancelTrade(access_token, token, qty) {
         return __awaiter(this, void 0, void 0, function* () {
             let headers = {
                 "Content-Type": "application/json",
@@ -56,7 +56,7 @@ class UpstoxController {
             };
             const url = "https://api.upstox.com/v2/order/place";
             const params = {
-                quantity: 1,
+                quantity: qty,
                 product: "D",
                 validity: "DAY",
                 price: 0,
@@ -117,7 +117,7 @@ class UpstoxController {
             return result;
         });
     }
-    static placeOrder(access_token, token) {
+    static placeOrder(access_token, token, qty) {
         return __awaiter(this, void 0, void 0, function* () {
             let headers = {
                 "Content-Type": "application/json",
@@ -125,7 +125,7 @@ class UpstoxController {
             };
             const url = "https://api.upstox.com/v2/order/place";
             const params = {
-                quantity: 1,
+                quantity: qty,
                 product: "D",
                 validity: "DAY",
                 price: 0,
