@@ -8,6 +8,7 @@ export enum Instruments {
   "NSE_EQ|INE669E01016",
   "NSE_EQ|INE040H01021",
   "NSE_FO|46794",
+  "NSE_FO|66716",
 }
 
 export const instrument_regex: RegExp =

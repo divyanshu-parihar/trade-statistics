@@ -17,71 +17,21 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
-import { dateRangeContext } from "../contexts/dateRange";
+import { dateRangeContext } from "../../contexts/dateRange";
 export default function page() {
   const token = localStorage.getItem("accesstoken");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState();
+  const [tradeData, setTradeData] = useState<{
+    trades: Array<Object>;
+    wins: number;
+    looses: number;
+  }>();
   const radioRef = useRef<HTMLElement>();
   const [noOfTrades, setNoOfTrades] = useState<number>(0);
   const [noOfTradesLoading, setNoOfTradesLoading] = useState(true);
   // @ts-ignore
   const { currentDateRange } = useContext(dateRangeContext);
-  const { toast } = useToast();
-
-  const PlaceOrder = (token: string) => {
-    if (
-      radioRef.current &&
-      (radioRef.current as HTMLElement).getAttribute("data-state") ==
-        "unchecked"
-    ) {
-      return;
-    }
-    axios
-      .post("/api/upstox/user/order/buy", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        token,
-      })
-      .then((res) => {
-        console.log(res.data);
-        toast({
-          title: "Order Placed",
-          description: "BUY order ",
-        });
-        return res.data;
-      })
-      .catch((e) => console.log(e));
-
-    console.log("order");
-  };
-  useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
-
-    function handleCallback(e: any) {
-      if (
-        radioRef.current &&
-        (radioRef.current as HTMLElement).getAttribute("data-state") ==
-          "unchecked"
-      )
-        return;
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-        // Handle the cmd + enter combination
-        e.preventDefault(); // Prevent the default behavior (e.g., form submission)
-        PlaceOrder(token!);
-        toast({
-          title: "Order Placed",
-          description: "BUY order ",
-        });
-      }
-    }
-    document.addEventListener("keydown", handleCallback);
-
-    return () => {
-      document.removeEventListener("keydown", handleCallback);
-    };
-  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("accesstoken");
@@ -114,20 +64,16 @@ export default function page() {
       })
       .then((res) => {
         console.log(res.data);
-        // resolve();
         setLoading((s) => false);
         setUserData(res.data.data);
       })
-      .catch(() => {
-        // reject();
-      });
+      .catch(() => {});
   }, []);
 
   return (
-    <div className="h-scree text-center font-sans text-xl">
-      <div className="title">User Statistics </div>
+    <div className="h-screen text-center font-sans text-xl">
       {loading ? (
-        ".. loading"
+        "LOADING>>>>>>>"
       ) : (
         <div className="container">
           <pre className="profile_data">
@@ -164,7 +110,7 @@ export default function page() {
                             <Badge>{el}</Badge>
                           </div>
                         );
-                      },
+                      }
                     )}
                 </CardFooter>
               </Card>
@@ -193,35 +139,6 @@ export default function page() {
             {/* {JSON.stringify(userData, null, 2)} */}
           </pre>
           {JSON.stringify(currentDateRange, null, 2)}
-          <div className="place_order">
-            <div className="container">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Place order</CardTitle>
-                  <CardDescription>
-                    Place QUICK 1 QTY Order in CMD + ENTER
-                  </CardDescription>
-                </CardHeader>
-                <CardContent
-                  className=" w-100 flex items-center
-                "
-                >
-                  {/* @ts-ignore */}
-                  <Switch ref={radioRef} id="airplane-mode" />
-                  <Label htmlFor="airplane-mode">Quick Trade</Label>
-                  <Input></Input>
-                  <Button
-                    // disabled={orderLoading}
-                    onClick={() => PlaceOrder(token || "")}
-                    className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
-                  >
-                    {" "}
-                    Order
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
         </div>
       )}
     </div>

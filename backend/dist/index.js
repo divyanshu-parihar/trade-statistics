@@ -12,7 +12,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use("/upstox", auth_1.default, upstox_1.default);
 app.get("/", (req, res) => {
-    res.json({ ping: "Hello" });
+    return res.json({ ping: "Hello" });
 });
 app.listen(8080, () => {
     console.log("server started...  on port 8080");

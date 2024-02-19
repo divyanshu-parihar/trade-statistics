@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { dateRangeContext } from "@/app/contexts/dateRange";
+import { dateRangeContext } from "@/contexts/dateRange";
 
 interface props {
   from: Date;
