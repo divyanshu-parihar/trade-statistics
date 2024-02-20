@@ -10,11 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
 import { dateRangeContext } from "../../contexts/dateRange";
@@ -43,13 +39,11 @@ export default function page() {
         token,
       })
       .then((res) => {
-        // console.log(res);
         console.log(res.data);
         setNoOfTradesLoading(false);
         setNoOfTrades((s) => res.data.data.data["trades_count"]);
       })
       .catch((e) => {
-        // reject();
         console.log(e);
       });
   }, []);
@@ -77,7 +71,7 @@ export default function page() {
       ) : (
         <div className="container">
           <pre className="profile_data">
-            <div className="flex">
+            <div className="flex flex-col">
               <Card className="m-4 w-full shadow-md">
                 <CardHeader>
                   <CardTitle>Profile</CardTitle>

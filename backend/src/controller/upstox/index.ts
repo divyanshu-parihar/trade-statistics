@@ -4,6 +4,44 @@ import { genError } from "../../utils/generateError";
 export type token = string;
 export class UpstoxController {
   constructor() {}
+  // platform
+
+  static async getOptionsInstuments(
+    access_token: string,
+    instrument_key: string,
+    expiry_date: string
+  ) {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://api.upstox.com/v2/option/contract`,
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${access_token.toString()}`,
+      },
+      params: {
+        instrument_key,
+        expiry_date,
+      },
+    };
+    let result: Result;
+    try {
+      const { data } = await axios(config);
+      result = {
+        status: "success",
+        data: data,
+        error: {},
+      };
+    } catch (e: any) {
+      result = {
+        status: "error",
+        data: {},
+        error: e,
+      };
+    }
+
+    return result;
+  }
   // profile
   static async getProfile(access_token: string) {
     let config = {
@@ -25,7 +63,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };
@@ -54,7 +92,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };
@@ -94,7 +132,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };
@@ -160,7 +198,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };
@@ -203,7 +241,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };
@@ -242,7 +280,7 @@ export class UpstoxController {
       };
     } catch (e: any) {
       result = {
-        status: "success",
+        status: "error",
         data: {},
         error: e,
       };

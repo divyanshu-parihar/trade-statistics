@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const middleware = (req, res, next) => {
+    console.log(req.body);
     if (req.body == null || !req.body.hasOwnProperty("token")) {
         const result = {
             status: "error",

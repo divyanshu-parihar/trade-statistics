@@ -7,6 +7,7 @@ const express_1 = require("express");
 const order_1 = __importDefault(require("./order"));
 const trades_1 = __importDefault(require("./trades"));
 const profile_1 = __importDefault(require("./profile"));
+const platform_1 = __importDefault(require("./platform"));
 const tokenPresence_1 = __importDefault(require("../../middlewares/tokenPresence"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
@@ -15,4 +16,5 @@ router.get("/", (req, res) => {
 router.use("/profile", profile_1.default);
 router.use("/order", tokenPresence_1.default, order_1.default);
 router.use("/trades", trades_1.default);
+router.use("/platform", platform_1.default);
 exports.default = router;

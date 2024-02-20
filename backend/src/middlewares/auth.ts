@@ -1,6 +1,7 @@
 import { Result } from "../models/types";
 
 const middleware = (req: any, res: any, next: any) => {
+  console.log(req.body);
   if (req.body == null || !req.body.hasOwnProperty("token")) {
     const result: Result = {
       status: "error",

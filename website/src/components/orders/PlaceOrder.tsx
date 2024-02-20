@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { Ref, useEffect, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
 import axios from "axios";
 import {
@@ -11,15 +11,56 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Input } from "../ui/input";
+const fetchOptions = async (token: string) => {
+  try {
+    const { data } = await axios.post(
+      // `${process.env.BACKEND_URL}/upstox/platform/instrument`,
+      `http://0.0.0.0:8080/upstox/platform/instrument`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        token,
+      }
+    );
+    return data;
+  } catch (e) {
+    return { e };
+  }
+};
+
 function PlaceOrder() {
   const { toast } = useToast();
   const [token, setToken] = useState<string>("NSE_FO|66716");
-  const radioRef = useRef<HTMLElement>();
-  const PlaceOrder = (token: string) => {
+  const radioRef = useRef<HTMLButtonElement | null>();
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
+  const [options, setOptions] = useState<[Object]>([
+    { name: "No Options", value: "NONE" },
+  ]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accesstoken");
+    console.log(token);
+    fetchOptions(token!).then((res) => {
+      console.log(res);
+      if (res["data"]["status"] == "success") {
+        setOptions((s) => res.data.data);
+        setLoadingOptions((s) => false);
+      }
+    });
+  }, []);
+  const placeOrder = (token: string) => {
     if (
-      radioRef &&
-      (radioRef.current as HTMLElement).getAttribute("data-state") ==
-        "unchecked"
+      radioRef.current &&
+      radioRef.current.getAttribute("data-state") == "unchecked"
     ) {
       return;
     }
@@ -35,7 +76,7 @@ function PlaceOrder() {
       .then((res) => {
         console.log(res.data);
         toast({
-          title: "Order Placed",
+          title: `Order Placed #${res.data.data.order_id}`,
           description: "BUY order ",
         });
         return res.data;
@@ -48,6 +89,7 @@ function PlaceOrder() {
     const token = localStorage.getItem("accesstoken");
     function handleCallback(e: any) {
       if (
+        radioRef &&
         radioRef.current &&
         radioRef.current.getAttribute("data-state") == "unchecked"
       )
@@ -55,7 +97,7 @@ function PlaceOrder() {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         // Handle the cmd + enter combination
         e.preventDefault(); // Prevent the default behavior (e.g., form submission)
-        PlaceOrder(token!);
+        placeOrder(token!);
         toast({
           title: "Order Placed",
           description: "BUY order ",
@@ -79,13 +121,51 @@ function PlaceOrder() {
             </CardDescription>
           </CardHeader>
           <CardContent className=" w-100 flex items-center">
-            {/* @ts-ignore */}
-            <Switch ref={radioRef} id="airplane-mode" />
-            <Label htmlFor="airplane-mode">Quick Trade</Label>
-            {/* <Input></Input> */}
+            <Switch
+              ref={radioRef as Ref<HTMLButtonElement> | undefined}
+              id="airplane-mode"
+              className="m-2"
+            />
+            <Label htmlFor="Button" className="mx-4">
+              Quick Trade
+            </Label>
+            <Select>
+              <SelectTrigger className="w-100">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <>
+                {!!loadingOptions ? (
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                  </SelectContent>
+                ) : (
+                  <SelectContent className="">
+                    {options.map((el: any) => (
+                      <SelectItem
+                        // className="w-[100px]"
+                        key={el.instrument_key}
+                        value={el.instrument_key}
+                      >
+                        {el.trading_symbol} x {el.lot_size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                )}
+              </>
+              {/* <Label htmlFor="Lot size"> Trade</Label> */}
+              <Input
+                type="number"
+                className="w-[100px] mx-4"
+                max={1800}
+                maxLength={1800}
+              ></Input>
+              {/* <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem> */}
+              {/* </SelectContent> */}
+            </Select>
+
             <Button
-              // disabled={orderLoading}
-              onClick={() => PlaceOrder(token || "")}
+              onClick={() => placeOrder(token!)}
               className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
             >
               {" "}

@@ -38,10 +38,8 @@ export default function Home() {
       ) : (
         <Card className="w-[350px]">
           <CardHeader>
-            <CardTitle>Create project</CardTitle>
-            <CardDescription>
-              Deploy your new project in one-click.
-            </CardDescription>
+            <CardTitle>Let's get started</CardTitle>
+            <CardDescription>Make profits with shortcuts.</CardDescription>
           </CardHeader>
           <CardContent>
             <form>
@@ -64,7 +62,7 @@ export default function Home() {
             <Link href="https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=482f3091-f1ef-449f-bc53-da02541d505e&redirect_uri=http://localhost:3000/api/upstox/callback&state=jshgdfakjsghfashjdgf">
               <Button variant="outline">Get token</Button>
             </Link>
-            <Button disabled={!!input == false} onClick={addToken}>
+            <Button disabled={!input} onClick={addToken}>
               Start
             </Button>
           </CardFooter>

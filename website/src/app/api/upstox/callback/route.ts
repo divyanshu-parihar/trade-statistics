@@ -21,7 +21,9 @@ export async function GET(req: NextRequest) {
         },
       }
     );
-    return new NextResponse(JSON.stringify({ data: response.data }, null, 2));
+    return new NextResponse(
+      `<pre>${JSON.stringify({ data: response.data }, null, 2)}</pre>`
+    );
   } catch (e) {
     return new NextResponse(JSON.stringify({ data: e }, null, 2));
   }

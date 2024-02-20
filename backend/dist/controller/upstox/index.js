@@ -17,6 +17,40 @@ const axios_1 = __importDefault(require("axios"));
 const generateError_1 = require("../../utils/generateError");
 class UpstoxController {
     constructor() { }
+    static getOptionsInstuments(access_token, instrument_key, expiry_date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let config = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: `https://api.upstox.com/v2/option/contract`,
+                headers: {
+                    accept: "application/json",
+                    Authorization: `Bearer ${access_token.toString()}`,
+                },
+                params: {
+                    instrument_key,
+                    expiry_date,
+                },
+            };
+            let result;
+            try {
+                const { data } = yield (0, axios_1.default)(config);
+                result = {
+                    status: "success",
+                    data: data,
+                    error: {},
+                };
+            }
+            catch (e) {
+                result = {
+                    status: "error",
+                    data: {},
+                    error: e,
+                };
+            }
+            return result;
+        });
+    }
     static getProfile(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
             let config = {
@@ -39,7 +73,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
@@ -69,7 +103,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
@@ -108,7 +142,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
@@ -170,7 +204,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
@@ -209,7 +243,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
@@ -244,7 +278,7 @@ class UpstoxController {
             }
             catch (e) {
                 result = {
-                    status: "success",
+                    status: "error",
                     data: {},
                     error: e,
                 };
