@@ -14,11 +14,15 @@ import { Switch } from "../ui/switch";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
 import { Input } from "../ui/input";
+import { Jaldi } from "next/font/google";
+import { error } from "console";
+import { getMiddleElements } from "@/lib/utils";
 const fetchOptions = async (token: string) => {
   try {
     const { data } = await axios.post(
@@ -39,10 +43,16 @@ const fetchOptions = async (token: string) => {
 
 function PlaceOrder() {
   const { toast } = useToast();
-  const [token, setToken] = useState<string>("NSE_FO|66716");
-  const radioRef = useRef<HTMLButtonElement | null>();
+  // const [token, setToken] = useState<string>("NSE_FO|66716");
+  const quickTradeRadioRef = useRef<HTMLButtonElement | null>(null);
+
+  const [quantity, setQuantity] = useState<number>(0);
+  const [currentStrikePrice, setCurrentStrikePrice] = useState<
+    string | undefined
+  >(undefined);
+
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
-  const [options, setOptions] = useState<[Object]>([
+  const [options, setOptions] = useState<Object[]>([
     { name: "No Options", value: "NONE" },
   ]);
 
@@ -52,33 +62,44 @@ function PlaceOrder() {
     fetchOptions(token!).then((res) => {
       console.log(res);
       if (res["data"]["status"] == "success") {
-        setOptions((s) => res.data.data);
+        setOptions((s) => getMiddleElements(res.data.data, 10));
         setLoadingOptions((s) => false);
       }
     });
   }, []);
-  const placeOrder = (token: string) => {
+  const placeOrder = (instrument_token: string) => {
+    const token = localStorage.getItem("accesstoken");
+    console.log(currentStrikePrice);
     if (
-      radioRef.current &&
-      radioRef.current.getAttribute("data-state") == "unchecked"
+      quickTradeRadioRef.current &&
+      quickTradeRadioRef.current.getAttribute("data-state") == "unchecked"
     ) {
       return;
     }
+    // value checks
+
+    if (!currentStrikePrice && quantity < 0 && quantity > 1800) return;
     axios
-      .post("/api/upstox/user/order/buy", {
+      .post("http://0.0.0.0:8080/upstox/order/buy", {
         headers: {
           "Content-Type": "application/json",
         },
         token,
-        instrument_token: token,
-        qty: 10,
+        instrument_token: instrument_token,
+        qty: quantity * 50,
       })
       .then((res) => {
-        console.log(res.data);
-        toast({
-          title: `Order Placed #${res.data.data.order_id}`,
-          description: "BUY order ",
-        });
+        if (res.data.status == "success")
+          toast({
+            title: `Order Placed #${res.data.data.order_id}`,
+            description: "BUY order ",
+          });
+        else {
+          toast({
+            title: ` Order Failed`,
+            description: `${res.data.error.message}`,
+          });
+        }
         return res.data;
       })
       .catch((e) => console.log(e));
@@ -86,18 +107,17 @@ function PlaceOrder() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
     function handleCallback(e: any) {
       if (
-        radioRef &&
-        radioRef.current &&
-        radioRef.current.getAttribute("data-state") == "unchecked"
+        quickTradeRadioRef &&
+        quickTradeRadioRef.current &&
+        quickTradeRadioRef.current.getAttribute("data-state") == "unchecked"
       )
         return;
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         // Handle the cmd + enter combination
         e.preventDefault(); // Prevent the default behavior (e.g., form submission)
-        placeOrder(token!);
+        placeOrder(currentStrikePrice!);
         toast({
           title: "Order Placed",
           description: "BUY order ",
@@ -109,7 +129,7 @@ function PlaceOrder() {
     return () => {
       document.removeEventListener("keydown", handleCallback);
     };
-  }, []);
+  }, [currentStrikePrice]);
   return (
     <div className="place_order">
       <div className="container">
@@ -121,34 +141,41 @@ function PlaceOrder() {
             </CardDescription>
           </CardHeader>
           <CardContent className=" w-100 flex items-center">
+            <Label htmlFor="Button" className="">
+              Quick Trade
+            </Label>
             <Switch
-              ref={radioRef as Ref<HTMLButtonElement> | undefined}
+              ref={quickTradeRadioRef as Ref<HTMLButtonElement> | undefined}
               id="airplane-mode"
               className="m-2"
             />
-            <Label htmlFor="Button" className="mx-4">
-              Quick Trade
-            </Label>
-            <Select>
-              <SelectTrigger className="w-100">
-                <SelectValue placeholder="Theme" />
+            <Select
+              value={currentStrikePrice}
+              onValueChange={(value) => {
+                setCurrentStrikePrice(value);
+              }}
+            >
+              <SelectTrigger className="w-[280px]">
+                <SelectValue placeholder="Strike Prices" />
               </SelectTrigger>
               <>
                 {!!loadingOptions ? (
                   <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="Loading">Loading</SelectItem>
                   </SelectContent>
                 ) : (
-                  <SelectContent className="">
-                    {options.map((el: any) => (
-                      <SelectItem
-                        // className="w-[100px]"
-                        key={el.instrument_key}
-                        value={el.instrument_key}
-                      >
-                        {el.trading_symbol} x {el.lot_size}
-                      </SelectItem>
-                    ))}
+                  <SelectContent>
+                    <SelectGroup>
+                      {options.map((el: any) => (
+                        <SelectItem
+                          // className="w-[100px]"
+                          key={el.instrument_key}
+                          value={el.instrument_key}
+                        >
+                          {el.trading_symbol} x {el.lot_size}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 )}
               </>
@@ -156,16 +183,18 @@ function PlaceOrder() {
               <Input
                 type="number"
                 className="w-[100px] mx-4"
-                max={1800}
-                maxLength={1800}
+                placeholder="Lot size"
+                max={36}
+                maxLength={36}
+                value={quantity}
+                onChange={(e) => {
+                  setQuantity((s) => parseInt(e.target.value));
+                }}
               ></Input>
-              {/* <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem> */}
-              {/* </SelectContent> */}
             </Select>
 
             <Button
-              onClick={() => placeOrder(token!)}
+              onClick={() => placeOrder(currentStrikePrice!)}
               className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
             >
               {" "}

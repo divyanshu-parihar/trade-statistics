@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
 import { dateRangeContext } from "../../contexts/dateRange";
+import { useRouter } from "next/navigation";
 export default function page() {
   const token = localStorage.getItem("accesstoken");
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function page() {
     looses: number;
   }>();
   const radioRef = useRef<HTMLElement>();
+  const router = useRouter();
   const [noOfTrades, setNoOfTrades] = useState<number>(0);
   const [noOfTradesLoading, setNoOfTradesLoading] = useState(true);
   // @ts-ignore
@@ -67,9 +69,12 @@ export default function page() {
   return (
     <div className="h-screen text-center font-sans text-xl">
       {loading ? (
-        "LOADING>>>>>>>"
+        "LOADING"
       ) : (
         <div className="container">
+          <Button onClick={() => router.push("/trade")} variant="destructive">
+            Trade
+          </Button>
           <pre className="profile_data">
             <div className="flex flex-col">
               <Card className="m-4 w-full shadow-md">
@@ -91,21 +96,17 @@ export default function page() {
                     )}
                     {/* <pre>{JSON.stringify(userData, null, 2)}</pre> */}
                   </div>
-
-                  {/* <div className="title">Exchanges</div> */}
                 </CardContent>
-                <CardFooter className="flex justify-around">
-                  Exchanges:
-                  {!!userData &&
-                    (userData as any).data.exchanges.map(
-                      (el: string, idx: number) => {
-                        return (
-                          <div key={idx} className="m-2">
-                            <Badge>{el}</Badge>
-                          </div>
-                        );
-                      }
-                    )}
+                <CardFooter className="flex justify-center">
+                  <div>Exchanges : </div>
+                  <div className="m-2">
+                    {!!userData &&
+                      (userData as any).data.exchanges.map(
+                        (el: string, idx: number) => {
+                          return <Badge key={idx}>{el}</Badge>;
+                        }
+                      )}
+                  </div>
                 </CardFooter>
               </Card>
 
@@ -132,7 +133,7 @@ export default function page() {
 
             {/* {JSON.stringify(userData, null, 2)} */}
           </pre>
-          {JSON.stringify(currentDateRange, null, 2)}
+          {/* {JSON.stringify(currentDateRange, null, 2)} */}
         </div>
       )}
     </div>
