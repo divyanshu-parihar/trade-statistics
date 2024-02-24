@@ -5,7 +5,7 @@ import axios from "axios";
 import { redirect, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // import { NextRequest, NextResponse } from "next/server";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 export default function handler() {
   // const code = req.nextUrl.searchParams.get("code");
@@ -48,28 +48,30 @@ export default function handler() {
       });
   }, []);
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center ">
-      {" "}
-      <div className="text-xl">
+    <Suspense>
+      <div className="w-screen h-screen flex flex-col items-center justify-center ">
         {" "}
-        Please go to main Screen and put this access token{" "}
-      </div>
-      {!loading && (
-        <div className="container w-100 grid place-items-center">
+        <div className="text-xl">
           {" "}
-          <div className="container w-auto overflow-scroll ">{token}</div>
-          <Button
-            onClick={() => {
-              navigator.clipboard.writeText(token);
-              toast({ title: "Token copied" });
-            }}
-            className="m-4"
-          >
-            Copy to Clipboard
-          </Button>
-          <Button onClick={() => router.push("/")}> Home</Button>
+          Please go to main Screen and put this access token{" "}
         </div>
-      )}
-    </div>
+        {!loading && (
+          <div className="container w-100 grid place-items-center">
+            {" "}
+            <div className="container w-auto overflow-scroll ">{token}</div>
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(token);
+                toast({ title: "Token copied" });
+              }}
+              className="m-4"
+            >
+              Copy to Clipboard
+            </Button>
+            <Button onClick={() => router.push("/")}> Home</Button>
+          </div>
+        )}
+      </div>
+    </Suspense>
   );
 }

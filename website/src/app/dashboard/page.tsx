@@ -16,7 +16,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { dateRangeContext } from "../../contexts/dateRange";
 import { useRouter } from "next/navigation";
 export default function page() {
-  const token = localStorage.getItem("accesstoken");
+  const token = window.localStorage.getItem("accesstoken");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [tradeData, setTradeData] = useState<{
@@ -32,7 +32,7 @@ export default function page() {
   const { currentDateRange } = useContext(dateRangeContext);
 
   useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
+    const token = window.localStorage.getItem("accesstoken");
     axios
       .post("/api/upstox/user/trades", {
         headers: {
@@ -50,7 +50,7 @@ export default function page() {
       });
   }, []);
   useEffect(() => {
-    const token = localStorage.getItem("accesstoken");
+    const token = window.localStorage.getItem("accesstoken");
     axios
       .post("/api/upstox/user/profile", {
         token,
