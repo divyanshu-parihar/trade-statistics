@@ -29,7 +29,7 @@ export default function Home() {
   const { setTheme } = useTheme();
   setTheme("dark");
   return (
-    <div className="container flex items-center justify-center h-screen">
+    <div className="container flex flex-col items-center justify-center h-screen">
       {!!user ? (
         <div>
           <pre>{JSON.stringify(user)}</pre>

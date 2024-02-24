@@ -50,9 +50,12 @@ export default function handler() {
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center ">
       {" "}
-      <div> Please go to main Screen and put this access token </div>
+      <div className="text-xl">
+        {" "}
+        Please go to main Screen and put this access token{" "}
+      </div>
       {!loading && (
-        <div className="container ">
+        <div className="container w-100 grid place-items-center">
           {" "}
           <div className="container w-auto overflow-scroll ">{token}</div>
           <Button
@@ -60,6 +63,7 @@ export default function handler() {
               navigator.clipboard.writeText(token);
               toast({ title: "Token copied" });
             }}
+            className="m-4"
           >
             Copy to Clipboard
           </Button>

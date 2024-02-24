@@ -20,8 +20,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Input } from "../ui/input";
-import { Jaldi } from "next/font/google";
-import { error } from "console";
 import { getMiddleElements } from "@/lib/utils";
 const fetchOptions = async (token: string) => {
   try {
@@ -49,12 +47,79 @@ function PlaceOrder() {
   const [quantity, setQuantity] = useState<number>(0);
   const [currentStrikePrice, setCurrentStrikePrice] = useState<
     string | undefined
-  >(undefined);
+  >();
 
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
   const [options, setOptions] = useState<Object[]>([
-    { name: "No Options", value: "NONE" },
+    {
+      lot_size: 1,
+      instrument_key: "NSE_EQ|INE669E01016",
+      trading_symbol: "Idea",
+    },
   ]);
+
+  const exitPosition = (instrument_token: string) => {
+    const token = localStorage.getItem("accesstoken");
+    if (
+      quickTradeRadioRef.current &&
+      quickTradeRadioRef.current.getAttribute("data-state") == "unchecked"
+    ) {
+      return;
+    }
+    // value checks
+
+    if (!currentStrikePrice && quantity < 0 && quantity > 1800) return;
+
+    axios
+      .post("http://localhost:8080/upstox/order/cancel", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        token,
+        instrument_token: instrument_token,
+        qty: quantity * 50,
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.data.status == "success")
+          toast({
+            title: `Position Exited #${res.data.data.order_id}`,
+            description: "SELL order ",
+          });
+        else {
+          toast({
+            title: `Failed`,
+            description: `${res.data.error.message}`,
+          });
+        }
+        return res.data;
+      })
+      .catch((e) => console.log(e));
+  };
+  useEffect(() => {
+    function handleCallback(e: any) {
+      if (
+        quickTradeRadioRef &&
+        quickTradeRadioRef.current &&
+        quickTradeRadioRef.current.getAttribute("data-state") == "unchecked"
+      )
+        return;
+      if ((e.metaKey || e.ctrlKey) && e.key === "Shift") {
+        // Handle the cmd + enter combination
+        e.preventDefault(); // Prevent the default behavior (e.g., form submission)
+        exitPosition(currentStrikePrice!);
+        // toast({
+        //   title: "Sold",
+        //   description: "BUY order ",
+        // });
+      }
+    }
+    document.addEventListener("keydown", handleCallback);
+
+    return () => {
+      document.removeEventListener("keydown", handleCallback);
+    };
+  }, [currentStrikePrice]);
 
   useEffect(() => {
     const token = localStorage.getItem("accesstoken");
@@ -62,7 +127,7 @@ function PlaceOrder() {
     fetchOptions(token!).then((res) => {
       console.log(res);
       if (res["data"]["status"] == "success") {
-        setOptions((s) => getMiddleElements(res.data.data, 10));
+        setOptions((s) => [...s, ...getMiddleElements(res.data.data, 10)]);
         setLoadingOptions((s) => false);
       }
     });
@@ -80,7 +145,7 @@ function PlaceOrder() {
 
     if (!currentStrikePrice && quantity < 0 && quantity > 1800) return;
     axios
-      .post("http://0.0.0.0:8080/upstox/order/buy", {
+      .post("http://localhost:8080/upstox/order/buy", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -96,7 +161,7 @@ function PlaceOrder() {
           });
         else {
           toast({
-            title: ` Order Failed`,
+            title: `Order Failed`,
             description: `${res.data.error.message}`,
           });
         }
@@ -193,13 +258,22 @@ function PlaceOrder() {
               ></Input>
             </Select>
 
-            <Button
-              onClick={() => placeOrder(currentStrikePrice!)}
-              className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
-            >
-              {" "}
-              Order
-            </Button>
+            <div className="flex flex-col">
+              <Button
+                onClick={() => placeOrder(currentStrikePrice!)}
+                className="m-4 cursor-pointer rounded-md bg-green-600 p-2 text-white"
+              >
+                {" "}
+                Order
+              </Button>
+              <Button
+                onClick={() => exitPosition(currentStrikePrice!)}
+                className="m-4 cursor-pointer rounded-md bg-red-600 p-2 text-white"
+              >
+                {" "}
+                Exit
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
