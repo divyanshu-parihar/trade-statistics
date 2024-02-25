@@ -16,7 +16,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { dateRangeContext } from "../../contexts/dateRange";
 import { useRouter } from "next/navigation";
 export default function page() {
-  const token = window.localStorage.getItem("accesstoken");
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [tradeData, setTradeData] = useState<{

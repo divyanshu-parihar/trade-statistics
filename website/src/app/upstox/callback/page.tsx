@@ -4,17 +4,15 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { redirect, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-// import { NextRequest, NextResponse } from "next/server";
 import { Suspense, useEffect, useState } from "react";
 
 export default function handler() {
-  // const code = req.nextUrl.searchParams.get("code");
-  // const state = req.nextUrl.searchParams.get("state");
   const params = useSearchParams();
   const { toast } = useToast();
   const [token, setToken] = useState<string>("loading");
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     axios
       .post(
@@ -35,29 +33,27 @@ export default function handler() {
       )
       .then((res) => {
         console.log(res.data.access_token);
-        setLoading((s) => false);
-        setToken((s) => res.data.access_token);
+        setLoading(false);
+        setToken(res.data.access_token);
 
         localStorage.setItem("accesstoken", res.data.access_token);
         // redirect("/");
       })
       .catch((e) => {
         console.log(e.message);
-        setLoading((s) => false);
-        setToken((s) => "Failed: Please go to main screen ");
+        setLoading(false);
+        setToken("Failed: Please go to the main screen ");
       });
   }, []);
+
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="w-screen h-screen flex flex-col items-center justify-center ">
-        {" "}
         <div className="text-xl">
-          {" "}
-          Please go to main Screen and put this access token{" "}
+          Please go to the main Screen and put this access token
         </div>
         {!loading && (
           <div className="container w-100 grid place-items-center">
-            {" "}
             <div className="container w-auto overflow-scroll ">{token}</div>
             <Button
               onClick={() => {
@@ -68,7 +64,7 @@ export default function handler() {
             >
               Copy to Clipboard
             </Button>
-            <Button onClick={() => router.push("/")}> Home</Button>
+            <Button onClick={() => router.push("/")}>Home</Button>
           </div>
         )}
       </div>

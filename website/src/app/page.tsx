@@ -15,6 +15,7 @@ import {
 import { Label } from "@radix-ui/react-label";
 import * as React from "react";
 import { Input } from "@/components/ui/input";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 export default function Home() {
   const [input, setInput] = useState<string>("");
   const [user, setUser] = useState<string>("");
@@ -30,6 +31,10 @@ export default function Home() {
   setTheme("dark");
   return (
     <div className="container flex flex-col items-center justify-center h-screen">
+      <div className="background z-[-1]">
+        <BackgroundBeams />
+      </div>
+      <h1 className="title italic text-6xl font-bold m-4">BURST</h1>
       {!!user ? (
         <div>
           <pre>{JSON.stringify(user)}</pre>
