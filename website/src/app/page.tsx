@@ -64,7 +64,7 @@ export default function Home() {
             </form>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Link href="https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=482f3091-f1ef-449f-bc53-da02541d505e&redirect_uri=http://localhost:3000/upstox/callback&state=jshgdfakjsghfashjdgf">
+            <Link href="https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=482f3091-f1ef-449f-bc53-da02541d505e&redirect_uri=https://trade-statistics-brown.vercel.app/upstox/callback&state=jshgdfakjsghfashjdgf">
               <Button variant="outline">Get token</Button>
             </Link>
             <Button disabled={!input} onClick={addToken}>

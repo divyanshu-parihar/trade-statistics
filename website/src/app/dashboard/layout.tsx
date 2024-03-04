@@ -6,8 +6,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="container">
       <nav>
-        <div className="title text-xl m-4 italic">QUICKADE</div>
-        <div>{/* <CustomAvatar /> */}</div>
+        <div className="title text-xl m-4 italic">Stratade</div>
       </nav>
       {children}
     </div>
