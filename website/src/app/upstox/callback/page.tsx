@@ -21,7 +21,7 @@ export default function handler() {
           code: params.get("code"),
           client_id: "e50e1fd9-6337-4429-8659-a4f00710bbe2",
           client_secret: "2y741sy4n5",
-          redirect_uri: "http://localhost:3000/upstox/callback",
+          redirect_uri: "https://upstox-token.vercel.app/upstox/callback",
           grant_type: "authorization_code",
         },
         {
