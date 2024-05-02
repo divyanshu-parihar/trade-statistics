@@ -19,8 +19,8 @@ export default function handler() {
         "https://api.upstox.com/v2/login/authorization/token",
         {
           code: params.get("code"),
-          client_id: "482f3091-f1ef-449f-bc53-da02541d505e",
-          client_secret: "t476fgptfo",
+          client_id: "e50e1fd9-6337-4429-8659-a4f00710bbe2",
+          client_secret: "2y741sy4n5",
           redirect_uri: "http://localhost:3000/upstox/callback",
           grant_type: "authorization_code",
         },
